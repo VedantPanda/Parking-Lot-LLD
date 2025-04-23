@@ -16,7 +16,20 @@ public class ParkingLot {
 
     private final Scanner scanner;
 
-    public ParkingLot(int noOfFloors, EntranceGate entranceGate, ExitGate exitGate) {
+    private static volatile ParkingLot parkingLotInstance;
+
+    public static ParkingLot getParkingLotInstance(int noOfFloors, EntranceGate entranceGate, ExitGate exitGate){
+        if(parkingLotInstance==null){
+            synchronized(ParkingLot.class){
+                if(parkingLotInstance==null){
+                    parkingLotInstance = new ParkingLot(noOfFloors, entranceGate, exitGate);
+                }
+            }
+        }
+        return parkingLotInstance;
+    }
+
+    private ParkingLot(int noOfFloors, EntranceGate entranceGate, ExitGate exitGate) {
         parkingFloors = new ArrayList<>();
         this.entranceGate = entranceGate;
         this.exitGate = exitGate;
@@ -36,12 +49,15 @@ public class ParkingLot {
         }
     }
 
-    public void parkVehicle(Vehicle vehicle) {
+    public Ticket parkVehicle(Vehicle vehicle) throws Exception {
         ParkingFloorAndParkingSlotVO parkingFloorAndParkingSlotVO = entranceGate.findParkingSlot(parkingFloors,
                 vehicle.getVehicleType());
         if(parkingFloorAndParkingSlotVO!=null){
             entranceGate.updateParkingSpot(parkingFloorAndParkingSlotVO.getParkingSlot(), vehicle);
-            entranceGate.generateTicket(parkingFloorAndParkingSlotVO, vehicle, "00:00");
+            return entranceGate.generateTicket(parkingFloorAndParkingSlotVO, vehicle, "00:00");
+        }
+        else {
+            throw new Exception("No parking spot is available");
         }
     }
 
