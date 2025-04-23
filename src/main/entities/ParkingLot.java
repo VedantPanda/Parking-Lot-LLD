@@ -37,18 +37,16 @@ public class ParkingLot {
     }
 
     public void parkVehicle(Vehicle vehicle) {
-        ParkingFloorAndParkingSlotVO parkingFloorAndParkingSlotVO = entranceGate.findParkingSlot(parkingFloors, vehicle.getVehicleType());
+        ParkingFloorAndParkingSlotVO parkingFloorAndParkingSlotVO = entranceGate.findParkingSlot(parkingFloors,
+                vehicle.getVehicleType());
         if(parkingFloorAndParkingSlotVO!=null){
             entranceGate.updateParkingSpot(parkingFloorAndParkingSlotVO.getParkingSlot(), vehicle);
-            Ticket ticket = entranceGate.generateTicket(parkingFloorAndParkingSlotVO);
-            vehicle.setTicket(ticket);
+            entranceGate.generateTicket(parkingFloorAndParkingSlotVO, vehicle, "00:00");
         }
     }
 
-    public void exitVehicle(Vehicle vehicle) {
-        double parkingFees = exitGate.calculateParkingPrice(vehicle);
-        exitGate.processPayment(parkingFees);
-        exitGate.unParkVehicleFromParkingSpot(vehicle);
+    public void exitVehicle(int ticketId) {
+        exitGate.processVehicleExit(ticketId);
     }
 
     public List<ParkingFloor> getParkingFloors() {

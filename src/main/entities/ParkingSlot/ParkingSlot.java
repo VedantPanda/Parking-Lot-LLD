@@ -40,6 +40,6 @@ public abstract class ParkingSlot {
         this.vehicle = null;
     }
 
-    protected abstract double price();
+    public abstract double price();
 
 }

@@ -11,7 +11,7 @@ public class TwoWheelerParkingSlot extends ParkingSlot{
     }
 
     @Override
-    protected double price() {
+    public double price() {
         return 20.0;
     }
 }
