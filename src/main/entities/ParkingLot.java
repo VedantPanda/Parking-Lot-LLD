@@ -61,7 +61,7 @@ public class ParkingLot {
         }
     }
 
-    public void exitVehicle(int ticketId) {
+    public void exitVehicle(int ticketId) throws Exception {
         exitGate.processVehicleExit(ticketId);
     }
 

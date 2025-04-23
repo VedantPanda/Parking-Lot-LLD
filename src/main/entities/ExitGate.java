@@ -17,12 +17,15 @@ public class ExitGate {
         this.pricingStrategy = pricingStrategy;
     }
 
-    public void processVehicleExit(int ticketId) {
+    public void processVehicleExit(int ticketId) throws Exception {
         Ticket ticket = ticketManager.getTicket(ticketId);
         if(ticket!=null) {
             double parkingPrice = calculateParkingPrice(ticket);
             processPayment(parkingPrice);
             ticket.getParkingFloorAndParkingSlotVO().getParkingSlot().unParkVehicleFromParkingSlot();
+        }
+        else {
+            throw new Exception("Invalid ticket id");
         }
     }
 
