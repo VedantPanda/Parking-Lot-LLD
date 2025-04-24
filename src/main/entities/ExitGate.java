@@ -1,5 +1,9 @@
 package main.entities;
 
+import main.consts.PaymentMethod;
+import main.consts.PricingMethod;
+import main.factory.PaymentStrategyFactory;
+import main.factory.PricingStrategyFactory;
 import main.strategy.paymentStrategy.PaymentStrategy;
 import main.strategy.pricingStrategy.PricingStrategy;
 
@@ -7,20 +11,15 @@ public class ExitGate {
 
     private final TicketManager ticketManager;
 
-    private final PaymentStrategy paymentStrategy;
-
-    private final PricingStrategy pricingStrategy;
-
-    public ExitGate(TicketManager ticketManager, PaymentStrategy paymentStrategy, PricingStrategy pricingStrategy) {
+    public ExitGate(TicketManager ticketManager) {
         this.ticketManager = ticketManager;
-        this.paymentStrategy = paymentStrategy;
-        this.pricingStrategy = pricingStrategy;
     }
 
     public void processVehicleExit(int ticketId) throws Exception {
         Ticket ticket = ticketManager.getTicket(ticketId);
         if(ticket!=null) {
             double parkingPrice = calculateParkingPrice(ticket);
+            System.out.println("Parking price for duration is "+parkingPrice);
             processPayment(parkingPrice);
             ticket.getParkingFloorAndParkingSlotVO().getParkingSlot().unParkVehicleFromParkingSlot();
         }
@@ -30,10 +29,12 @@ public class ExitGate {
     }
 
     private double calculateParkingPrice(Ticket ticket) {
+        PricingStrategy pricingStrategy = PricingStrategyFactory.getPricingStrategy(PricingMethod.HOURLY_BASED);
         return ticket.getParkingFloorAndParkingSlotVO().getParkingSlot().price() * pricingStrategy.getPricing();
     }
 
     private void processPayment(double parkingFees) {
+        PaymentStrategy paymentStrategy = PaymentStrategyFactory.getPaymentStrategy(PaymentMethod.UPI);
         paymentStrategy.processPayment(parkingFees);
     }
 

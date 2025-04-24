@@ -44,7 +44,8 @@ public class ParkingFloor {
     }
 
     private void initializeParkingSlotsHelper(int noOfParkingSlots, VehicleType vehicleType) {
-        for(int i= parkingSlots.size() ; i < parkingSlots.size() + noOfParkingSlots; i++){
+        int currNoOfParkingSlots = parkingSlots.size();
+        for(int i= currNoOfParkingSlots ; i < currNoOfParkingSlots + noOfParkingSlots; i++){
             ParkingSlot parkingSlot = ParkingSlotFactory.getParkingSlot(i+1, vehicleType);
             parkingSlots.add(parkingSlot);
         }

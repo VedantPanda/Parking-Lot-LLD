@@ -1,5 +1,7 @@
 package main.entities;
 
+import main.consts.ParkingMethod;
+import main.factory.ParkingStrategyFactory;
 import main.vo.ParkingFloorAndParkingSlotVO;
 
 import java.util.ArrayList;
@@ -16,34 +18,37 @@ public class ParkingLot {
 
     private final Scanner scanner;
 
-    private static volatile ParkingLot parkingLotInstance;
-
-    public static ParkingLot getParkingLotInstance(int noOfFloors, EntranceGate entranceGate, ExitGate exitGate){
-        if(parkingLotInstance==null){
-            synchronized(ParkingLot.class){
-                if(parkingLotInstance==null){
-                    parkingLotInstance = new ParkingLot(noOfFloors, entranceGate, exitGate);
-                }
-            }
-        }
-        return parkingLotInstance;
+    private static class ParkingLotSingleton {
+        private static final ParkingLot PARKING_LOT_INSTANCE = new ParkingLot();
     }
 
-    private ParkingLot(int noOfFloors, EntranceGate entranceGate, ExitGate exitGate) {
+    public static ParkingLot getParkingLotInstance() {
+        return ParkingLotSingleton.PARKING_LOT_INSTANCE;
+    }
+
+    private ParkingLot() {
+        scanner = new Scanner(System.in);
+        System.out.println("Enter the number of floors");
+        int noOfFloors = scanner.nextInt();
+        TicketManager ticketManager = new TicketManager();
+        EntranceGate entranceGate = new EntranceGate(
+                ParkingStrategyFactory.getParkingStrategy(ParkingMethod.NORMAL_PARKING), ticketManager);
+        ExitGate exitGate = new ExitGate(ticketManager);
         parkingFloors = new ArrayList<>();
         this.entranceGate = entranceGate;
         this.exitGate = exitGate;
         initializeParkingFloors(noOfFloors);
-        scanner = new Scanner(System.in);
+
     }
 
     private void initializeParkingFloors(int noOfFloors) {
         for (int i = 1; i <= noOfFloors; i++){
+            System.out.println("Enter details for "+i+" floor");
             System.out.println("Enter no of 2 wheeler parking slots");
             int twoWheelerSpots = scanner.nextInt();
             System.out.println("Enter no of 4 wheeler parking slots");
             int fourWheelerSpots = scanner.nextInt();
-            System.out.println("Enter no of 4 wheeler parking slots");
+            System.out.println("Enter no of 6 wheeler parking slots");
             int sixWheelerSpots = scanner.nextInt();
             parkingFloors.add(new ParkingFloor(i, twoWheelerSpots, fourWheelerSpots, sixWheelerSpots));
         }
